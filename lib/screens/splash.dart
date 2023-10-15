@@ -35,7 +35,7 @@ class Splash extends StatelessWidget {
                   height: 300,
                 ),
                 Text(
-                  'Smart Home Gas Danger',
+                  'Smart Gas Danger',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 26,
@@ -43,7 +43,7 @@ class Splash extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Detector by IOT',
+                  'Detector System',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 26,
@@ -51,7 +51,7 @@ class Splash extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '(SHGDD)',
+                  '(SGDDS)',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 26,

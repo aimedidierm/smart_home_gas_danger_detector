@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gas_detector/screens/dashboard.dart';
 import 'package:gas_detector/screens/profile.dart';
-import 'package:gas_detector/screens/system_settings.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,7 +14,6 @@ class _HomeState extends State<Home> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const Dashboard(),
-    const SystemSettings(),
     const Profile(),
   ];
 
@@ -30,7 +28,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('SHGDD App'),
+        title: const Text('SGDDS App'),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -40,10 +38,6 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
             label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
