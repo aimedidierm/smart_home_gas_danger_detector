@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:gas_detector/models/api_response.dart';
 import 'package:gas_detector/models/user.dart';
-import 'package:gas_detector/screens/forget_password.dart';
 import 'package:gas_detector/screens/home.dart';
+import 'package:gas_detector/screens/login.dart';
 import 'package:gas_detector/services/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class ForgetPassword extends StatefulWidget {
+  const ForgetPassword({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<ForgetPassword> createState() => _ForgetPasswordState();
 }
 
-class _LoginState extends State<Login> {
+class _ForgetPasswordState extends State<ForgetPassword> {
   bool _loading = false;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
 
-  void loginUser() async {
-    ApiResponse response = await login(email.text, password.text);
+  void ForgetPasswordUser() async {
+    ApiResponse response = await forgetUserPassword(email.text);
     if (response.error == null) {
-      _saveAndRedirect(response.data as User);
+      setState(() {
+        _loading = false;
+      });
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => const Home(),
+            builder: (context) => const Login(),
           ),
           (route) => false);
     } else {
@@ -40,12 +41,6 @@ class _LoginState extends State<Login> {
     }
   }
 
-  void _saveAndRedirect(User user) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString('token', user.token ?? '');
-    await pref.setInt('userId', (user.id ?? 0));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +49,7 @@ class _LoginState extends State<Login> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
-            'SGDDS Login',
+            'SGDDS Forget Password',
             style: TextStyle(
               color: Colors.green,
               fontWeight: FontWeight.bold,
@@ -88,25 +83,6 @@ class _LoginState extends State<Login> {
                   const SizedBox(
                     height: 20,
                   ),
-                  TextFormField(
-                    controller: password,
-                    obscureText: true,
-                    validator: (val) =>
-                        val!.isEmpty ? 'Password is required' : null,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter password',
-                      contentPadding: EdgeInsets.all(8.0),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 1,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
                 ],
               ),
             ),
@@ -120,7 +96,7 @@ class _LoginState extends State<Login> {
                 setState(() {
                   _loading = true;
                 });
-                loginUser();
+                ForgetPasswordUser();
               }
             },
             child: Container(
@@ -136,7 +112,7 @@ class _LoginState extends State<Login> {
                         color: Colors.white,
                       )
                     : const Text(
-                        'Login',
+                        'Send SMS',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -146,25 +122,6 @@ class _LoginState extends State<Login> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ForgetPassword()),
-              );
-            },
-            child: const Text(
-              "Forget password",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                color: Colors.green,
-              ),
-            ),
-          )
         ],
       ),
     );

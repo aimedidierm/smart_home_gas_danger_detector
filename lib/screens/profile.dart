@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gas_detector/const.dart';
+import 'package:gas_detector/models/api_response.dart';
 import 'package:gas_detector/screens/login.dart';
 import 'package:gas_detector/services/user.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  bool _loading = false;
   List<Map<String, dynamic>> _userDetails = [];
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   TextEditingController name = TextEditingController();
@@ -42,6 +44,34 @@ class _ProfileState extends State<Profile> {
       }
     } else {
       print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
+  void updateUser() async {
+    ApiResponse response = await updateDetails(
+      name.text,
+      email.text,
+      phone.text,
+      password.text,
+    );
+    if (response.error == null) {
+      setState(() {
+        _loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User details updated!'),
+        ),
+      );
+    } else {
+      setState(() {
+        _loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${response.error}'),
+        ),
+      );
     }
   }
 
@@ -78,9 +108,9 @@ class _ProfileState extends State<Profile> {
                   controller: name,
                   validator: (val) =>
                       val!.isEmpty ? 'Names are required' : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Enter your names',
-                    contentPadding: const EdgeInsets.all(8.0),
+                    contentPadding: EdgeInsets.all(8.0),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -104,9 +134,9 @@ class _ProfileState extends State<Profile> {
                       return null;
                     }
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Enter your email',
-                    contentPadding: const EdgeInsets.all(8.0),
+                    contentPadding: EdgeInsets.all(8.0),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -127,9 +157,9 @@ class _ProfileState extends State<Profile> {
                       return null;
                     }
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Enter your phone',
-                    contentPadding: const EdgeInsets.all(8.0),
+                    contentPadding: EdgeInsets.all(8.0),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -146,9 +176,9 @@ class _ProfileState extends State<Profile> {
                   obscureText: true,
                   validator: (val) =>
                       val!.isEmpty ? 'Password is required' : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Enter password',
-                    contentPadding: const EdgeInsets.all(8.0),
+                    contentPadding: EdgeInsets.all(8.0),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -171,9 +201,9 @@ class _ProfileState extends State<Profile> {
                       return null;
                     }
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Confirm password',
-                    contentPadding: const EdgeInsets.all(8.0),
+                    contentPadding: EdgeInsets.all(8.0),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 1,
@@ -193,24 +223,32 @@ class _ProfileState extends State<Profile> {
           padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
           child: GestureDetector(
             onTap: () {
-              // updateUser();
+              setState(() {
+                _loading = true;
+              });
+              updateUser();
             },
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.green,
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
                 child: Center(
-                  child: Text(
-                    'Update',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
+                  child: _loading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          'Update',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                 ),
               ),
             ),

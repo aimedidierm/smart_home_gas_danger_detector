@@ -35,6 +35,34 @@ Future<ApiResponse> login(String email, String password) async {
   return apiResponse;
 }
 
+Future<ApiResponse> forgetUserPassword(String email) async {
+  ApiResponse apiResponse = ApiResponse();
+  try {
+    final response = await http.post(Uri.parse(forgetPasswordURL),
+        headers: {'Accept': 'application/json'}, body: {'email': email});
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = User.fromJson(jsonDecode(response.body));
+        break;
+      case 401:
+        final errors = jsonDecode(response.body)['error'];
+        apiResponse.error = errors;
+        break;
+      case 403:
+        apiResponse.error = jsonDecode(response.body)['message'];
+        break;
+      default:
+        print(response.body);
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = serverError;
+  }
+
+  return apiResponse;
+}
+
 Future<ApiResponse> getUserDetails() async {
   ApiResponse apiResponse = ApiResponse();
   try {
@@ -65,47 +93,50 @@ Future<ApiResponse> getUserDetails() async {
   return apiResponse;
 }
 
-// Future<ApiResponse> updateDetails(
-//   String? name,
-//   String? email,
-//   String? password,
-// ) async {
-//   ApiResponse apiResponse = ApiResponse();
-//   try {
-//     String token = await getToken();
-//     final response = await http.put(Uri.parse(profileURL), headers: {
-//       'Accept': 'application/json',
-//       'Authorization': 'Bearer $token',
-//     }, body: {
-//       'name': name,
-//       'email': email,
-//       'password': password
-//     });
-//     print(response.body);
-//     switch (response.statusCode) {
-//       case 200:
-//         apiResponse.data = "User details updated";
-//         break;
-//       case 422:
-//         final errors = jsonDecode(response.body)['errors'];
-//         apiResponse.error = errors[errors.keys.element(0)][0];
-//         break;
-//       case 403:
-//         apiResponse.error = jsonDecode(response.body)['message'];
-//         break;
-//       case 500:
-//         apiResponse.error = serverError;
-//         break;
-//       default:
-//         apiResponse.error = somethingWentWrong;
-//         break;
-//     }
-//   } catch (e) {
-//     apiResponse.error = serverError;
-//   }
+Future<ApiResponse> updateDetails(
+  String? name,
+  String? email,
+  String? phone,
+  String? password,
+) async {
+  ApiResponse apiResponse = ApiResponse();
+  try {
+    String token = await getToken();
+    final response = await http.put(Uri.parse(profileURL), headers: {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    }, body: {
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'password': password
+    });
+    print(response.body);
+    switch (response.statusCode) {
+      case 200:
+        apiResponse.data = "User details updated";
+        break;
+      case 422:
+        final errors = jsonDecode(response.body)['errors'];
+        apiResponse.error = errors;
+        break;
+      case 403:
+        apiResponse.error = jsonDecode(response.body)['message'];
+        break;
+      case 500:
+        apiResponse.error = serverError;
+        break;
+      default:
+        apiResponse.error = somethingWentWrong;
+        break;
+    }
+  } catch (e) {
+    apiResponse.error = serverError;
+  }
 
-//   return apiResponse;
-// }
+  return apiResponse;
+}
+
 Future<ApiResponse> updateValve(
   bool? valve,
 ) async {
